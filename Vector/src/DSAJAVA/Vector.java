@@ -120,6 +120,7 @@ public class Vector <T> {
 	
 	//copy from the old array to a new array which its size 
 	//is newSize
+	@SuppressWarnings("unchecked")
 	private T[] copyOf(Object[] elementObject2,int newSize)
 	{
 		return (T[]) copyOf(elementObject2,newSize,elementObject2.getClass());
@@ -136,5 +137,60 @@ public class Vector <T> {
 	    return copy;
 	}
 	
+	public boolean add(T e){
+		ensureCapacity(size+1);
+		elementObject[size++] = e;
+		return true;
+	}
 	
+	//add 
+	public boolean add(int index,T e){
+		rangeCheckForAdd(index);
+		ensureCapacity(size+1);
+		for(int i = size; i > index; --i){
+			elementObject[i] = elementObject[i-1];
+		}
+		elementObject[index] = e;
+		return true;
+	}
+	
+	
+	//range check for add because index can equal to size
+	private void rangeCheckForAdd(int index){
+		if(index < 0 || index > size){
+			throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
+		}
+	}
+	
+	//remove
+	public  T remove(int index){
+		rangeCheck(index);
+		T oldValue = (T)elementObject[index];
+		removeRange(index,index+1);
+		elementObject[--size] = null; //clear to let GC works
+		return oldValue;
+	}
+	
+	//removeRange,[fromIndex,toIndex)
+	public void removeRange(int fromIndex,int toIndex){
+		rangeCheck(fromIndex);
+		rangeCheck(toIndex);
+		if(fromIndex >= toIndex)
+			return;
+		while(toIndex < size){
+			elementObject[fromIndex++] = elementObject[toIndex++]; 
+		}
+		for(int i = fromIndex; i < size; ++i){
+			elementObject[i] = null; // let GC works
+		}
+		size = fromIndex;
+	}
+	
+	//clear 
+	void clear(){
+		for (int i = 0; i < size; i++){
+            elementObject[i] = null;
+		}
+        size = 0;
+	}
 }
